@@ -1,5 +1,12 @@
-import React from "react";
+import { Routes } from "react-router-dom";
+import { publicRoutes } from "./routes/publicRoutes";
+import { privateRoutes } from "./routes/privateRoutes";
 
 export default function App() {
-    return <div>Hello 001</div>;
+    return (
+        <Routes>
+            {publicRoutes}
+            {privateRoutes}
+        </Routes>
+    );
 }

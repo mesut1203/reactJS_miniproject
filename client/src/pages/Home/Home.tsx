@@ -1,5 +1,9 @@
-import React from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/stores/store";
 
 export default function Home() {
-    return <div>Home</div>;
+    const isAuth = useSelector((state: RootState) => state.auth.isAuth);
+    console.log(isAuth);
+
+    return <div>Home: {isAuth ? "Đã đăng nhập" : "Chưa đăng nhập"}</div>;
 }

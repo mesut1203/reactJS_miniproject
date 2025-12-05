@@ -1,8 +1,8 @@
-import React from "react";
+import { getLocalToken } from "@/utils/auth";
 import { Navigate, Outlet } from "react-router-dom";
 
 export default function AuthMiddlewares() {
-    const isAuth = false;
+    const isAuth = getLocalToken() ? true : false;
     if (!isAuth) {
         return <Navigate to={"/auth/login"} />;
     }

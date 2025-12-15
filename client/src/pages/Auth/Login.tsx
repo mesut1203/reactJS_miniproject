@@ -1,40 +1,49 @@
-import { updateAuthStatus } from "@/stores/slices/authSlice";
+// import { updateAuthStatus } from "@/stores/slices/authSlice";
 import { saveLocalRefreshToken, saveLocalToken } from "@/utils/auth";
-import { client } from "@/utils/clients";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { MESSAGES } from "@/constants/message";
+import { requestLogin } from "@/service/authService";
+import { Link } from "react-router-dom";
+import { RouteNames } from "@/constants/route";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [isLoading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!email || !password) {
-            setError("Email và password là bắt buộc");
+        if (!email) {
+            setError(MESSAGES.AUTH.USERNAME_INVALID);
+            return;
+        }
+
+        if (!password) {
+            setError(MESSAGES.AUTH.PASSWORD_INVALID);
             return;
         }
 
         setError("");
 
         try {
-            const res = await client.post("/auth/login", {
-                email,
-                password,
-            });
+            setLoading(true);
+            const data = await requestLogin({ email, password });
 
-            saveLocalToken(res.data.accessToken);
-            saveLocalRefreshToken(res.data.refreshToken);
-            dispatch(updateAuthStatus(true));
-            navigate("/");
+            saveLocalToken(data.accessToken);
+            saveLocalRefreshToken(data.refreshToken);
+
+            setTimeout(() => {
+                navigate("/");
+            }, 1000);
         } catch (err) {
             console.log(err);
-            setError("Đăng nhập thất bại");
+            setError(MESSAGES.AUTH.UNAUTHENTICATED);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -73,11 +82,20 @@ export default function Login() {
                     />
                 </div>
 
+                {error && (
+                    <p className="text-red-500 text-sm font-medium text-center">
+                        {error}
+                    </p>
+                )}
+
                 <button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition duration-200 text-base"
+                    disabled={isLoading}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl
+               transition duration-200 text-base
+               disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                    Login
+                    {isLoading ? "Logging in..." : "Login"}
                 </button>
 
                 {/* Các mục khác... */}
@@ -104,10 +122,13 @@ export default function Login() {
                         Forgot password?
                     </a>
                     <p>
-                        Need an Account?{" "}
-                        <a href="#" className="text-blue-600 hover:underline">
+                        Need an Account?
+                        <Link
+                            to={RouteNames.AUTH_REGISTER}
+                            className="text-blue-600 hover:underline"
+                        >
                             Sign up
-                        </a>
+                        </Link>
                     </p>
                 </div>
             </form>

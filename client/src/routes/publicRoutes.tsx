@@ -2,7 +2,7 @@
 import { RouteNames } from "@/constants/route";
 import AuthLayout from "@/layouts/AuthLayout/AuthLayout";
 import MainLayout from "@/layouts/MainLayout/MainLayout";
-import GuestMiddlewares from "@/middlewares/AuthMiddlewares";
+import GuestMiddlewares from "@/middlewares/GuestMiddlewares";
 
 import Login from "@/pages/Auth/Login";
 import Register from "@/pages/Auth/Register";

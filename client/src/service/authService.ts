@@ -24,10 +24,14 @@ export const requestLogout = async () => {
     if (!accessToken) {
         throw new Error("Token not exist");
     }
-    const {data} = await client.post("/auth/logout", null, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
+    const { data } = await client.post(
+        "/auth/logout",
+        {},
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }
+    );
     return data;
 };

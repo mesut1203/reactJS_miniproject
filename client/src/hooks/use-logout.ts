@@ -1,7 +1,12 @@
 import { requestLogout } from "@/service/authService";
+import { removeLocalToken } from "@/utils/auth";
 
-export const useLogout = async () => {
-    try {
+export const useLogout = () => {
+    const logout = async (redirectTo: string = "/") => {
         await requestLogout();
-    } catch (error) {}
+        removeLocalToken();
+        // navigate(redirectTo);
+        window.location.href = redirectTo;
+    };
+    return { logout };
 };

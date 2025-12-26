@@ -8,4 +8,9 @@ export const saveLocalRefreshToken = (token: string) => {
 
 export const getLocalToken = () => {
     return localStorage.getItem("access_token");
-}
+};
+
+export const removeLocalToken = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+};

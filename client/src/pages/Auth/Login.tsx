@@ -6,6 +6,8 @@ import { MESSAGES } from "@/constants/message";
 import { requestLogin } from "@/service/authService";
 import { Link } from "react-router-dom";
 import { RouteNames } from "@/constants/route";
+import { toast } from "react-toastify";
+const TIMEOUT = 1000;
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -36,9 +38,11 @@ export default function Login() {
             saveLocalToken(data.accessToken);
             saveLocalRefreshToken(data.refreshToken);
 
+            toast.success(MESSAGES.AUTH.AUTHENTICATED);
+
             setTimeout(() => {
                 navigate("/");
-            }, 1000);
+            }, TIMEOUT);
         } catch (err) {
             console.log(err);
             setError(MESSAGES.AUTH.UNAUTHENTICATED);

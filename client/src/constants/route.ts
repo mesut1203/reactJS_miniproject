@@ -4,5 +4,4 @@ export enum RouteNames {
     HOME = "/",
     SEARCH = "/search",
     ACCOUNT = "/account",
-    CONFIRM_ACCOUNT = "/account/confirm",
 }

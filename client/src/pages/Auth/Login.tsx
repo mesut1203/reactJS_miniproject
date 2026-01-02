@@ -51,6 +51,10 @@ export default function Login() {
         }
     };
 
+    const handleGoogleLogin = () => {
+        console.log("loginGoogle");
+    };
+
     return (
         <>
             {/* Tiêu đề và Mô tả */}
@@ -110,6 +114,7 @@ export default function Login() {
                 <button
                     type="button"
                     className="w-full flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-xl hover:bg-gray-50 transition"
+                    onClick={handleGoogleLogin}
                 >
                     <img
                         src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -122,9 +127,9 @@ export default function Login() {
                 </button>
 
                 <div className="flex justify-between text-gray-600 mt-4 text-sm md:text-base font-medium">
-                    <a href="#" className="hover:underline">
+                    <Link to="#" className="hover:underline">
                         Forgot password?
-                    </a>
+                    </Link>
                     <p>
                         Need an Account?
                         <Link

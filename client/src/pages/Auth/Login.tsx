@@ -7,7 +7,7 @@ import { requestLogin } from "@/service/authService";
 import { Link } from "react-router-dom";
 import { RouteNames } from "@/constants/route";
 import { toast } from "react-toastify";
-import { getGoogleRedirectUrl } from "@/service/socialService";
+import { getGoogleLoginUrl } from "@/service/socialService";
 const TIMEOUT = 1000;
 
 export default function Login() {
@@ -53,9 +53,10 @@ export default function Login() {
   };
 
   const handleGoogleLogin = async () => {
-    const redirectUrl = getGoogleRedirectUrl();
-
-    window.location.href = redirectUrl;
+    // const redirectUrl = getGoogleRedirectUrl();
+    // window.location.href = redirectUrl;
+    const url = await getGoogleLoginUrl();
+    window.location.href = url;
   };
 
   return (

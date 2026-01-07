@@ -4,5 +4,5 @@ export enum RouteNames {
   HOME = "/",
   SEARCH = "/search",
   ACCOUNT = "/account",
-  GOOGLE_CALLBACK = "/auth/google/callback",
+  GOOGLE_CALLBACK = "/auth/google/success",
 }

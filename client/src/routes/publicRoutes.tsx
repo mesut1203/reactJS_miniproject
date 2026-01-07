@@ -19,9 +19,9 @@ export const publicRoutes = (
     <Route element={<GuestMiddlewares />}>
       <Route element={<AuthLayout />}>
         <Route path={RouteNames.AUTH_LOGIN} element={<Login />} />
-        <Route path={RouteNames.GOOGLE_CALLBACK} element={<GoogleCallback />} />
         <Route path={RouteNames.AUTH_REGISTER} element={<Register />} />
       </Route>
+      <Route path={RouteNames.GOOGLE_CALLBACK} element={<GoogleCallback />} />
     </Route>
   </>
 );

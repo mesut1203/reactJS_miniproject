@@ -8,6 +8,7 @@ import Login from "@/pages/Auth/Login";
 import Register from "@/pages/Auth/Register";
 import Home from "@/pages/Home/Home";
 import Search from "@/pages/Search/Search";
+import Product from "@/pages/Product/Product";
 import { Route } from "react-router-dom";
 
 export const publicRoutes = (
@@ -15,6 +16,7 @@ export const publicRoutes = (
     <Route element={<MainLayout />}>
       <Route path={RouteNames.HOME} element={<Home />} />
       <Route path={RouteNames.SEARCH} element={<Search />} />
+      <Route path={RouteNames.PRODUCT} element={<Product />} />
     </Route>
     <Route element={<GuestMiddlewares />}>
       <Route element={<AuthLayout />}>

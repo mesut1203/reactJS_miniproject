@@ -3,16 +3,25 @@ import type { AppDispatch } from "@/stores/store";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
+import Header from "./Header";
+import Footer from "./Footer";
+import { getLocalToken } from "@/utils/auth";
 
 export default function MainLayout() {
-    const dispatch = useDispatch<AppDispatch>();
-    useEffect(() => {
-        dispatch(getAuthProfile());
-    }, []);
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    const token = getLocalToken();
 
-    return (
-        <div className="main-layout py-3 w-[80%] mx-auto">
-            <Outlet />
-        </div>
-    );
+    if (token) {
+      dispatch(getAuthProfile());
+    }
+  }, [dispatch]);
+
+  return (
+    <div className="main-layout py-3 mx-auto ">
+      <Header />
+      <Outlet />
+      <Footer />
+    </div>
+  );
 }

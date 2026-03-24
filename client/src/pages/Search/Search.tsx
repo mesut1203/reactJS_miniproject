@@ -29,15 +29,15 @@ export default function Search() {
         const params: any = {
           limit: 20,
           page: parseInt(page),
+          sort,
         };
 
-        if (q) params.search = q;
+        if (q) params.q = q;
         if (category) params.category = category;
         if (minPrice) params.minPrice = minPrice;
         if (maxPrice) params.maxPrice = maxPrice;
         if (minRating) params.minRating = minRating;
         if (discount) params.discount = discount;
-        if (sort) params.sort = sort;
 
         const data = await getProducts(params);
         setProducts(data.products || []);

@@ -1,6 +1,6 @@
 import { Search, Menu, X, Loader2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { RouteNames } from "@/constants/route";
 import { getProducts } from "@/service/productService";
 import type { Product } from "@/service/productService";
@@ -158,7 +158,7 @@ const Header = () => {
 
           {/* Right menu */}
           <div className="flex items-center gap-6 shrink-0">
-            <span className="hidden md:block text-sm font-medium hover:text-blue-600 cursor-pointer transition-colors">Orders</span>
+            <Link to={RouteNames.ORDER} className="hidden md:block text-sm font-medium hover:text-blue-600 cursor-pointer transition-colors no-underline text-inherit">Orders</Link>
             <span className="hidden md:block text-sm font-medium hover:text-blue-600 cursor-pointer transition-colors">Sign up</span>
             <span className="hidden md:block text-sm font-medium hover:text-blue-600 cursor-pointer transition-colors">Log in</span>
             <button

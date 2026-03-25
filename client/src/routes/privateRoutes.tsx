@@ -1,0 +1,22 @@
+// import { routes } from "@/constants/route";
+import { RouteNames } from "@/constants/route";
+import MainLayout from "@/layouts/MainLayout/MainLayout";
+import AuthMiddlewares from "@/middlewares/AuthMiddlewares";
+import Account from "@/pages/Account/Account";
+import Cart from "@/pages/Cart/Cart";
+import Order from "@/pages/Order/Order";
+import OrderDetail from "@/pages/Order/OrderDetail";
+import { Route } from "react-router-dom";
+
+export const privateRoutes = (
+  <>
+    <Route element={<AuthMiddlewares />}>
+      <Route element={<MainLayout />}>
+        <Route path={RouteNames.ACCOUNT} element={<Account />} />
+        <Route path={RouteNames.CART} element={<Cart />} />
+        <Route path={RouteNames.ORDER} element={<Order />} />
+        <Route path={RouteNames.ORDER_DETAIL} element={<OrderDetail />} />
+      </Route>
+    </Route>
+  </>
+);

@@ -1,10 +1,20 @@
-import React from "react";
-import { Button } from "./components/ui/button";
+import { Routes } from "react-router-dom";
+import { publicRoutes } from "./routes/publicRoutes";
+import { privateRoutes } from "./routes/privateRoutes";
+import { coreRoutes } from "./core/routes";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
     return (
-        <div className="text-center">
-            <Button className="bg-red-500 hover:bg-green-400">Click me</Button>
-        </div>
+        <>
+            <Routes>
+                {publicRoutes}
+                {privateRoutes}
+                {coreRoutes}
+            </Routes>
+
+            <ToastContainer position="top-right" autoClose={3000} />
+        </>
     );
 }

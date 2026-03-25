@@ -5,4 +5,8 @@ export enum RouteNames {
   SEARCH = "/search",
   ACCOUNT = "/account",
   GOOGLE_CALLBACK = "/auth/google/success",
+  PRODUCT = "/product/:id",
+  CART = "/cart",
+  ORDER = "/orders",
+  ORDER_DETAIL = "/orders/:id",
 }

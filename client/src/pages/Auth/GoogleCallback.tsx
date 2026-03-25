@@ -25,7 +25,6 @@ const GoogleCallback = () => {
     saveLocalToken(accessToken);
     saveLocalRefreshToken(refreshToken);
 
-    // 👉 BƯỚC QUAN TRỌNG
     requestGoogleSuccess({ accessToken, refreshToken })
       .then((res) => {
         // redux user

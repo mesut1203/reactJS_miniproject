@@ -8,11 +8,15 @@ interface ProductSectionProps {
   isLoading?: boolean;
 }
 
-export default function ProductSection({ title, titleHighlight, products, isLoading }: ProductSectionProps) {
+export default function ProductSection({
+  title,
+  titleHighlight,
+  products,
+  isLoading,
+}: ProductSectionProps) {
   return (
     <section className="py-12 bg-[#F3F4F6]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        
         {/* Section Title */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-1">
@@ -31,7 +35,10 @@ export default function ProductSection({ title, titleHighlight, products, isLoad
           {isLoading ? (
             // Skeleton loaders
             [...Array(5)].map((_, i) => (
-              <div key={i} className="flex-none w-[180px] md:w-[240px] bg-white rounded-2xl p-4 h-[350px] animate-pulse snap-start">
+              <div
+                key={i}
+                className="flex-none w-[180px] md:w-[240px] bg-white rounded-2xl p-4 h-[350px] animate-pulse snap-start"
+              >
                 <div className="w-full aspect-square bg-gray-200 rounded-xl mb-4"></div>
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                 <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
@@ -40,7 +47,10 @@ export default function ProductSection({ title, titleHighlight, products, isLoad
             ))
           ) : products.length > 0 ? (
             products.map((product) => (
-              <div key={product._id || Math.random().toString()} className="flex-none w-[180px] md:w-[240px] lg:w-[calc(20%-1.2rem)] h-auto snap-start">
+              <div
+                key={product._id || Math.random().toString()}
+                className="flex-none w-[180px] md:w-[240px] lg:w-[calc(20%-1.2rem)] h-auto snap-start"
+              >
                 <ProductCard product={product} />
               </div>
             ))

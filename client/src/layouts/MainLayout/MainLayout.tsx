@@ -1,6 +1,6 @@
 import { getAuthProfile } from "@/stores/middlewares/authMiddlewares";
 import type { AppDispatch } from "@/stores/store";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";

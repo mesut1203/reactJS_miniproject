@@ -8,4 +8,5 @@ export enum RouteNames {
   PRODUCT = "/product/:id",
   CART = "/cart",
   ORDER = "/orders",
+  ORDER_DETAIL = "/orders/:id",
 }

@@ -1,4 +1,6 @@
 import type { Order } from "@/service/orderService";
+import { Link } from "react-router-dom";
+import { RouteNames } from "@/constants/route";
 
 interface OrderItemCardProps {
   order: Order;
@@ -99,9 +101,9 @@ export default function OrderItemCard({ order, onCancel, isCanceling }: OrderIte
 
         {/* Right Side: Buttons */}
         <div className="flex flex-col gap-3 w-full lg:w-64 shrink-0 justify-center">
-          <button className="w-full py-2.5 px-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-sm font-bold rounded-full transition-colors focus:ring-2 focus:ring-yellow-300 outline-none shadow-sm">
+          <Link to={RouteNames.ORDER_DETAIL.replace(":id", order._id)} className="w-full text-center py-2.5 px-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-sm font-bold rounded-full transition-colors focus:ring-2 focus:ring-yellow-300 outline-none shadow-sm block box-border">
             Track Package
-          </button>
+          </Link>
           <button className="w-full py-2.5 px-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-sm font-bold rounded-full transition-colors focus:ring-2 focus:ring-yellow-300 outline-none shadow-sm">
             Get Product support
           </button>

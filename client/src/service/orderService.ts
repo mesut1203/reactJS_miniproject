@@ -29,3 +29,8 @@ export const cancelOrder = async (orderId: string): Promise<{ message: string, o
   const { data } = await client.delete(`/orders/${orderId}`);
   return data;
 };
+
+export const getOrderById = async (orderId: string): Promise<{ order: Order; trackingId?: string }> => {
+  const { data } = await client.get(`/orders/${orderId}`);
+  return data;
+};

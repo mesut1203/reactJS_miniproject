@@ -1,6 +1,9 @@
 import { Search, Menu, X, Loader2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/stores/store";
+import { useLogout } from "@/hooks/use-logout";
 import { RouteNames } from "@/constants/route";
 import { getProducts } from "@/service/productService";
 import type { Product } from "@/service/productService";
@@ -15,6 +18,9 @@ const Header = () => {
   const navigate = useNavigate();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const { isAuth, user } = useSelector((state: RootState) => state.auth);
+  const { logout } = useLogout();
 
   // Sync input with URL when navigating between pages
   useEffect(() => {
@@ -159,8 +165,35 @@ const Header = () => {
           {/* Right menu */}
           <div className="flex items-center gap-6 shrink-0">
             <Link to={RouteNames.ORDER} className="hidden md:block text-sm font-medium hover:text-blue-600 cursor-pointer transition-colors no-underline text-inherit">Orders</Link>
-            <span className="hidden md:block text-sm font-medium hover:text-blue-600 cursor-pointer transition-colors">Sign up</span>
-            <span className="hidden md:block text-sm font-medium hover:text-blue-600 cursor-pointer transition-colors">Log in</span>
+            
+            {isAuth ? (
+              <div className="hidden md:flex items-center gap-3">
+                <span className="text-sm font-semibold text-gray-900">
+                  {user?.fullName || user?.email || "User"}
+                </span>
+                <span className="text-gray-300">|</span>
+                <Link to={RouteNames.ACCOUNT} className="text-sm font-medium hover:text-blue-600 transition-colors no-underline text-inherit">
+                  Setting
+                </Link>
+                <span className="text-gray-300">|</span>
+                <button 
+                  onClick={() => logout()}
+                  className="text-sm font-medium hover:text-red-600 transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="hidden md:flex items-center gap-6">
+                <Link to={RouteNames.AUTH_REGISTER} className="text-sm font-medium hover:text-blue-600 transition-colors no-underline text-inherit">
+                  Sign up
+                </Link>
+                <Link to={RouteNames.AUTH_LOGIN} className="text-sm font-medium hover:text-blue-600 transition-colors no-underline text-inherit">
+                  Log in
+                </Link>
+              </div>
+            )}
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"

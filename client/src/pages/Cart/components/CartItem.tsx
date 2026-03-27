@@ -5,6 +5,7 @@ interface CartItemProps {
   item: ICartItem;
   onUpdateQuantity: (productId: string, quantity: number) => void;
   onRemove: (productId: string) => void;
+  isUpdating?: boolean;
 }
 
 const formatPrice = (p: number) => {
@@ -14,8 +15,8 @@ const formatPrice = (p: number) => {
   }).format(p);
 };
 
-export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
-  const discountPct = item.priceDiscount > 0 ? Math.round((item.priceDiscount / item.price) * 100) : 0;
+export default function CartItem({ item, onUpdateQuantity, onRemove, isUpdating = false }: CartItemProps) {
+  const discountPct = item.priceDiscount > 0 ? Math.round(((item.price - item.priceDiscount) / item.price) * 100) : 0;
   const currentPrice = item.price - (item.priceDiscount || 0);
 
   return (
@@ -63,18 +64,23 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemP
         <div className="flex items-center gap-4 mt-4">
           <div className="flex items-center border border-gray-200 rounded-md">
             <button
-              onClick={() => onUpdateQuantity(item.productId, Math.max(1, item.quantity - 1))}
-              disabled={item.quantity <= 1}
-              className="px-3 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-50 transition-colors"
+              onClick={() => onUpdateQuantity(item.productId, item.quantity - 1)}
+              disabled={item.quantity <= 1 || isUpdating}
+              className="px-3 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              -
+              −
             </button>
-            <span className="px-3 py-1 text-sm font-medium border-x border-gray-200">
-              {item.quantity}
+            <span className="px-3 py-1 text-sm font-medium border-x border-gray-200 min-w-[36px] text-center">
+              {isUpdating ? (
+                <span className="inline-block w-3 h-3 rounded-full border-2 border-gray-400 border-t-transparent animate-spin" />
+              ) : (
+                item.quantity
+              )}
             </span>
             <button
               onClick={() => onUpdateQuantity(item.productId, item.quantity + 1)}
-              className="px-3 py-1 text-gray-600 hover:bg-gray-100 transition-colors"
+              disabled={isUpdating}
+              className="px-3 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               +
             </button>

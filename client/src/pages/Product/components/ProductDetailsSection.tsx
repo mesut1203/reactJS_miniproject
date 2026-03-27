@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import type { Product } from "@/service/productService";
 import { addToCart } from "@/service/cartService";
 import { toast } from "react-toastify";
@@ -39,6 +40,17 @@ export default function ProductDetailsSection({ product }: { product: Product })
     try {
       await addToCart(product._id, quantity);
       toast.success("Added to cart successfully");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to add to cart");
+    }
+  };
+
+  const navigate = useNavigate();
+
+  const handleBuyNow = async () => {
+    try {
+      await addToCart(product._id, quantity);
+      navigate("/cart");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to add to cart");
     }
@@ -175,7 +187,10 @@ export default function ProductDetailsSection({ product }: { product: Product })
           >
             Add to Cart
           </button>
-          <button className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-full font-medium transition-colors shadow-sm">
+          <button
+            onClick={handleBuyNow}
+            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-full font-medium transition-colors shadow-sm"
+          >
             Buy Now
           </button>
         </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { client } from "@/utils/clients";
+import { changePassword } from "@/service/profileService";
 
 export default function ChangePassword() {
   const [saving, setSaving] = useState(false);
@@ -15,23 +15,46 @@ export default function ChangePassword() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateChangePassword = () => {
+    if (!form.currentPassword) {
+      toast.error("Current password is required");
+      return false;
+    }
     if (form.newPassword !== form.confirmPassword) {
       toast.error("New passwords do not match");
-      return;
+      return false;
     }
+    if (form.currentPassword === form.newPassword) {
+      toast.error("Mật khẩu mới không được trùng với mật khẩu hiện tại");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateChangePassword()) return;
+
     try {
       setSaving(true);
-      const { data } = await client.patch("/profile/change-password", form);
+      const payload = {
+        password: form.currentPassword,
+        newPassword: form.newPassword,
+        confirmPassword: form.confirmPassword,
+      };
+      const data = await changePassword(payload);
       toast.success(data.message || "Password changed successfully!");
       setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err: any) {
       const errors = err?.response?.data?.errors;
-      if (errors?.currentPassword) {
+      if (errors?.password) {
+        toast.error(errors.password);
+      } else if (errors?.currentPassword) {
         toast.error(errors.currentPassword);
       } else {
-        toast.error(err?.response?.data?.message || "Failed to change password");
+        toast.error(
+          err?.response?.data?.message || "Failed to change password",
+        );
       }
     } finally {
       setSaving(false);
@@ -56,6 +79,7 @@ export default function ChangePassword() {
             value={form.currentPassword}
             onChange={handleChange}
             required
+            autoComplete="current-password"
             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
           />
         </div>
@@ -71,6 +95,7 @@ export default function ChangePassword() {
             onChange={handleChange}
             required
             minLength={6}
+            autoComplete="new-password"
             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
           />
         </div>
@@ -86,6 +111,7 @@ export default function ChangePassword() {
             onChange={handleChange}
             required
             minLength={6}
+            autoComplete="new-password"
             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
           />
         </div>

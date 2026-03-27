@@ -41,18 +41,26 @@ export const removeFromCart = async (productId: string) => {
   return data;
 };
 
-export const updateCartQuantity = async (productId: string, quantity: number) => {
-  // Use PUT instead of PATCH as the backend API CORS policy rejects PATCH requests
-  const { data } = await client.put(`/shopping-cart/${productId}`, { quantity });
+export const updateCartQuantity = async (
+  productId: string,
+  quantity: number,
+) => {
+  const { data } = await client.put(`/shopping-cart/${productId}`, {
+    quantity,
+  });
   return data;
 };
 
-export const getCartSuggestYouMightAlsoLike = async (): Promise<{ products: Product[] }> => {
+export const getCartSuggestYouMightAlsoLike = async (): Promise<{
+  products: Product[];
+}> => {
   const { data } = await client.get("/cart-suggest/you-might-also-like");
   return data;
 };
 
-export const getCartSuggestRecommended = async (): Promise<{ products: Product[] }> => {
+export const getCartSuggestRecommended = async (): Promise<{
+  products: Product[];
+}> => {
   const { data } = await client.get("/cart-suggest/recommended");
   return data;
 };

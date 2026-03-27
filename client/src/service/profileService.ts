@@ -22,6 +22,17 @@ export interface UpdateProfilePayload {
 export const updateProfile = async (
   payload: UpdateProfilePayload,
 ): Promise<{ user: UserProfile }> => {
-  const { data } = await client.patch("/profile/me", payload);
+  const { data } = await client.put("/profile/me", payload);
+  return data;
+};
+
+export interface ChangePasswordPayload {
+  password?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+}
+
+export const changePassword = async (payload: ChangePasswordPayload) => {
+  const { data } = await client.patch("/profile/change-password", payload);
   return data;
 };

@@ -34,9 +34,28 @@ export interface RatingStat {
   percent: number;
 }
 
-export const getCategories = async () => {
+export interface Category {
+  _id: string;
+  name: string;
+}
+
+/** Returns full category objects (id + name) — use this for filtering */
+export const getCategoriesWithId = async (): Promise<Category[]> => {
   const { data } = await client.get("/categories");
-  return data.categories.map((c: any) => c.name) as string[];
+  // API may return [{ _id, name }] or ["name"] depending on endpoint
+  const raw: any[] = data.categories || [];
+  if (raw.length === 0) return [];
+  if (typeof raw[0] === "string") {
+    // fallback: only names available, return without id
+    return raw.map((name) => ({ _id: "", name }));
+  }
+  return raw.map((c) => ({ _id: c._id || c.id || "", name: c.name || "" }));
+};
+
+/** Returns only category names (legacy usage) */
+export const getCategories = async () => {
+  const cats = await getCategoriesWithId();
+  return cats.map((c) => c.name);
 };
 
 export const getProducts = async (params?: any) => {

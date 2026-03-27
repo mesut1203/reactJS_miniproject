@@ -1,45 +1,48 @@
 const SearchBanner = () => {
   return (
-    <div className="w-full bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm mb-8">
-      <div className="flex flex-col md:flex-row items-center">
-        {/* Left Side: Text Content */}
-        <div className="p-8 md:w-1/2 flex flex-col gap-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-            India's first headphone brand by a 3x Grammy Winner
-          </h2>
-          <div className="w-16 h-1 bg-blue-600 rounded-full"></div>
-          <p className="text-gray-600 text-sm">
-            Experience the sound of perfection with our latest noise-cancelling technology.
+    <div className="w-full rounded-xl overflow-hidden mb-6 relative bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 shadow-lg">
+      <div className="flex flex-col md:flex-row items-center min-h-[140px]">
+        {/* Left text */}
+        <div className="flex-1 px-8 py-6 z-10">
+          <p className="text-xs uppercase tracking-widest text-orange-400 font-bold mb-1">
+            Grammy Award Winner
           </p>
-          <button className="w-fit px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
-            Shop Now
+          <h2 className="text-xl md:text-2xl font-extrabold text-white leading-tight max-w-xs">
+            India's first headphone brand by a{" "}
+            <span className="text-orange-400">3xGrammy Winner</span>
+          </h2>
+          <button className="mt-4 px-5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg transition-colors shadow-md">
+            Shop Now →
           </button>
         </div>
 
-        {/* Right Side: Featured Product Layout */}
-        <div className="md:w-1/2 flex items-center justify-center p-8 bg-gray-50">
-          <div className="flex bg-white rounded-2xl shadow-lg p-6 max-w-sm border border-gray-200 gap-6">
-            <div className="w-1/2 aspect-square flex items-center justify-center">
-              <img 
-                src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80" 
-                alt="Headphones" 
-                className="max-w-full max-h-full object-contain"
-              />
-            </div>
-            <div className="w-1/2 flex flex-col justify-center">
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Featured</p>
-              <h4 className="text-sm font-bold text-gray-900 line-clamp-2 mb-2 leading-tight">
-                Sony WH-1000XM4 Industry Leading Wireless
-              </h4>
-              <div className="flex text-yellow-500 mb-2">
-                {"★".repeat(5)}
-                <span className="text-[10px] text-gray-400 ml-1 ml-1 self-center">12</span>
-              </div>
-              <p className="text-xs font-bold text-blue-600">$229.00</p>
-            </div>
+        {/* Right: product card mockup */}
+        <div className="flex-shrink-0 flex items-center justify-end pr-6 py-4 gap-3">
+          {/* Main product image */}
+          <div className="w-28 h-28 md:w-36 md:h-36 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center overflow-hidden p-3">
+            <img
+              src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=300&q=80"
+              alt="Featured Headphone"
+              className="max-w-full max-h-full object-contain drop-shadow-2xl"
+            />
+          </div>
+
+          {/* Featured card */}
+          <div className="hidden md:flex flex-col gap-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-3 w-36 text-white">
+            <p className="text-[9px] uppercase font-bold tracking-widest text-orange-300">
+              Featured
+            </p>
+            <p className="text-xs font-semibold leading-snug line-clamp-2">
+              Sony WH-1000XM4 Only headphone brand created by a Grammy winning artist.
+            </p>
+            <div className="flex text-yellow-400 text-[10px]">★★★★★</div>
+            <p className="text-xs font-bold text-orange-300">₫22,990,000</p>
           </div>
         </div>
       </div>
+
+      {/* Decorative gradient orb */}
+      <div className="absolute top-0 right-0 w-48 h-48 bg-orange-500/20 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 };

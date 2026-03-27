@@ -25,6 +25,8 @@ export default function Cart() {
   const [recommended, setRecommended] = useState<Product[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  // Track which productIds are currently being updated (to disable buttons)
+  const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchCart();
@@ -66,22 +68,30 @@ export default function Cart() {
   };
 
   const handleUpdateQuantity = async (productId: string, quantity: number) => {
+    if (quantity < 1) return;
+    // Mark as updating — disables +/− buttons for this item
+    setUpdatingIds((prev) => new Set(prev).add(productId));
     try {
-      // Optimistic update
+      // Optimistic update: update quantity client-side for immediate visual response
       if (cartData) {
-        setCartData({
-          ...cartData,
-          items: cartData.items.map((item) =>
-            item.productId === productId ? { ...item, quantity } : item,
-          ),
-        });
+        const updatedItems = cartData.items.map((item) =>
+          item.productId === productId ? { ...item, quantity } : item,
+        );
+        // We only update the visual number, we don't recalculate the total
+        // perfectly because we will await fetchCart() immediately anyway.
+        setCartData({ ...cartData, items: updatedItems });
       }
-      const data = await updateCartQuantity(productId, quantity);
-      toast.success(data.message || "Cart updated");
-      fetchCart(); // Re-fetch to get correct totals
+      await updateCartQuantity(productId, quantity);
+      await fetchCart(); // Re-sync the server's exact output (price, total, logic etc)
     } catch (err: any) {
       toast.error(err?.response?.data?.message || "Failed to update quantity");
-      fetchCart(); // Revert on failure
+      await fetchCart(); // Revert to server state on failure
+    } finally {
+      setUpdatingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(productId);
+        return next;
+      });
     }
   };
 
@@ -184,6 +194,7 @@ export default function Cart() {
                       item={item}
                       onUpdateQuantity={handleUpdateQuantity}
                       onRemove={handleRemoveItem}
+                      isUpdating={updatingIds.has(item.productId)}
                     />
                   ))}
                 </div>

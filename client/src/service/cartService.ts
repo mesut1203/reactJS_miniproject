@@ -42,7 +42,8 @@ export const removeFromCart = async (productId: string) => {
 };
 
 export const updateCartQuantity = async (productId: string, quantity: number) => {
-  const { data } = await client.patch(`/shopping-cart/${productId}`, { quantity });
+  // Use PUT instead of PATCH as the backend API CORS policy rejects PATCH requests
+  const { data } = await client.put(`/shopping-cart/${productId}`, { quantity });
   return data;
 };
 

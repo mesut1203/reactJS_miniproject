@@ -1,59 +1,55 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getCategories } from "@/service/productService";
-import { Star, ChevronDown } from "lucide-react";
+import { getCategoriesWithId, type Category } from "@/service/productService";
+import { Star } from "lucide-react";
 
-/**
- * SearchFilterSidebar provides a functional filtering interface for search results.
- * It interacts with the URL search parameters to trigger data fetching in the parent Search page.
- */
+const PRICE_RANGES = [
+  { label: "Under ₫200,000", min: "", max: "200000" },
+  { label: "₫200,000 – ₫500,000", min: "200000", max: "500000" },
+  { label: "₫500,000 – ₫1,000,000", min: "500000", max: "1000000" },
+  { label: "₫1,000,000 – ₫5,000,000", min: "1000000", max: "5000000" },
+  { label: "Over ₫5,000,000", min: "5000000", max: "" },
+];
+
+const SORT_OPTIONS = [
+  { label: "Price: Low to High", value: "price_asc" },
+  { label: "Price: High to Low", value: "price_desc" },
+  { label: "Avg. Customer Review", value: "review_avg" },
+  { label: "Newest Arrivals", value: "newest" },
+];
+
+const DISCOUNTS = [10, 20, 30, 40, 50, 70];
+
 const SearchFilterSidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [categories, setCategories] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [catLoading, setCatLoading] = useState(true);
 
-  // Current filter values from URL
-  const activeCategory = searchParams.get("category") || "";
-  const minPrice = searchParams.get("minPrice") || "";
-  const maxPrice = searchParams.get("maxPrice") || "";
+  // URL stores categoryId (for API) and categoryName (for display)
+  const activeCategoryId   = searchParams.get("category") || "";
+  const minPrice  = searchParams.get("minPrice")  || "";
+  const maxPrice  = searchParams.get("maxPrice")  || "";
   const minRating = searchParams.get("minRating") || "";
-  const discount = searchParams.get("discount") || "";
+  const discount  = searchParams.get("discount")  || "";
+  const sort      = searchParams.get("sort")      || "";
 
-  // Fetch categories on mount
   useEffect(() => {
-    const fetchCats = async () => {
-      try {
-        const cats = await getCategories();
-        setCategories(cats);
-      } catch (err) {
-        console.error("Failed to fetch categories", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCats();
+    getCategoriesWithId()
+      .then(setCategories)
+      .catch(() => {})
+      .finally(() => setCatLoading(false));
   }, []);
 
-  /**
-   * Updates multiple search parameters at once and resets pagination.
-   */
   const updateFilters = (updates: Record<string, string | null>) => {
     const newParams = new URLSearchParams(searchParams);
     Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === "") {
-        newParams.delete(key);
-      } else {
-        newParams.set(key, value);
-      }
+      if (value === null || value === "") newParams.delete(key);
+      else newParams.set(key, value);
     });
-    // Reset to page 1 whenever filters change
     newParams.set("page", "1");
     setSearchParams(newParams);
   };
 
-  /**
-   * Resets all filters while preserving the search query.
-   */
   const clearFilters = () => {
     const q = searchParams.get("search");
     const newParams = new URLSearchParams();
@@ -61,122 +57,214 @@ const SearchFilterSidebar = () => {
     setSearchParams(newParams);
   };
 
-  const ratings = [4, 3, 2, 1];
-  const discounts = [10, 20, 30, 40, 50];
+  const activePriceRange = PRICE_RANGES.find(
+    (r) => r.min === minPrice && r.max === maxPrice,
+  );
+
+  const handleCategoryClick = (cat: Category) => {
+    if (activeCategoryId === cat._id) {
+      // deselect
+      updateFilters({ category: null, categoryName: null });
+    } else {
+      updateFilters({
+        // If we have a real ID use it for API, else fallback to name
+        category: cat._id || cat.name,
+        categoryName: cat.name,
+      });
+    }
+  };
 
   return (
-    <aside className="flex flex-col gap-6">
-      {/* Sidebar Header */}
-      <div className="flex items-center justify-between px-1">
-        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest">Filters</h3>
-        <button 
+    <aside className="flex flex-col gap-1">
+      {/* Header */}
+      <div className="flex items-center justify-between py-3 px-1 border-b border-gray-200 mb-2">
+        <span className="text-base font-bold text-gray-900">Filter</span>
+        <button
           onClick={clearFilters}
-          className="text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-wider"
+          className="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
         >
           Clear All
         </button>
       </div>
 
-      {/* Category Section */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
-        <h4 className="font-bold text-sm text-gray-900 mb-4 flex items-center justify-between group cursor-default">
-          Category
-          <ChevronDown size={14} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
-        </h4>
-        <div className="flex flex-col gap-2.5 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-          {loading ? (
-             <div className="animate-pulse space-y-3">
-                {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-3.5 bg-gray-100 rounded-full w-full"></div>)}
-             </div>
-          ) : (
-            categories.map((cat) => (
-              <label key={cat} className="group flex items-center gap-3 cursor-pointer">
-                <div className="relative flex items-center justify-center">
-                  <input
-                    type="radio"
-                    name="category"
-                    className="appearance-none w-4 h-4 border border-gray-300 rounded-full checked:border-blue-600 checked:bg-blue-600 transition-all cursor-pointer"
-                    checked={activeCategory === cat}
-                    onChange={() => updateFilters({ category: cat })}
-                  />
-                  {activeCategory === cat && (
-                    <div className="absolute w-1.5 h-1.5 bg-white rounded-full"></div>
-                  )}
-                </div>
-                <span className={`text-sm transition-colors ${activeCategory === cat ? 'text-blue-600 font-bold' : 'text-gray-600 group-hover:text-gray-900'}`}>
-                  {cat}
-                </span>
-              </label>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* Price Range Section */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
-        <h4 className="font-bold text-sm text-gray-900 mb-4">Price Range</h4>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="relative group">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] font-bold">₫</span>
-            <input 
-              type="number"
-              placeholder="Min"
-              className="w-full pl-6 pr-2 py-2 text-sm border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-100 outline-none transition-all placeholder:text-gray-300"
-              value={minPrice}
-              onChange={(e) => updateFilters({ minPrice: e.target.value })}
-            />
-          </div>
-          <div className="relative group">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] font-bold">₫</span>
-            <input 
-              type="number"
-              placeholder="Max"
-              className="w-full pl-6 pr-2 py-2 text-sm border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-100 outline-none transition-all placeholder:text-gray-300"
-              value={maxPrice}
-              onChange={(e) => updateFilters({ maxPrice: e.target.value })}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Ratings Section */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
-        <h4 className="font-bold text-sm text-gray-900 mb-4">Customer Review</h4>
-        <div className="flex flex-col gap-3">
-          {ratings.map((r) => (
+      {/* Customer Reviews */}
+      <div className="py-4 border-b border-gray-100">
+        <h4 className="text-sm font-bold text-gray-900 mb-3">Customer Reviews</h4>
+        <div className="flex flex-col gap-2">
+          {[4, 3, 2, 1].map((r) => (
             <button
               key={r}
-              onClick={() => updateFilters({ minRating: r.toString() })}
-              className={`flex items-center gap-2.5 text-sm transition-all group ${minRating === r.toString() ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+              onClick={() =>
+                updateFilters({ minRating: minRating === r.toString() ? null : r.toString() })
+              }
+              className={`flex items-center gap-1.5 group transition-all text-left ${
+                minRating === r.toString() ? "opacity-100" : "opacity-70 hover:opacity-100"
+              }`}
             >
               <div className="flex items-center gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star 
-                    key={i} 
-                    size={14} 
-                    className={`${i < r ? "fill-yellow-400 text-yellow-400" : "fill-gray-100 text-gray-200"} transition-colors`} 
+                  <Star
+                    key={i}
+                    size={13}
+                    className={
+                      i < r
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "fill-gray-200 text-gray-200"
+                    }
                   />
                 ))}
               </div>
-              <span className={`text-[13px] ${minRating === r.toString() ? 'font-bold' : 'font-medium'}`}>& Up</span>
+              <span
+                className={`text-xs font-medium ml-0.5 ${
+                  minRating === r.toString()
+                    ? "text-orange-600 font-bold"
+                    : "text-gray-600 group-hover:text-gray-900"
+                }`}
+              >
+                &amp; Up
+              </span>
+              {minRating === r.toString() && (
+                <span className="ml-auto text-orange-500 text-xs">✓</span>
+              )}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Discount Section */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
-        <h4 className="font-bold text-sm text-gray-900 mb-4">Discount</h4>
-        <div className="flex flex-col gap-2.5">
-          {discounts.map((d) => (
+      {/* Price Range */}
+      <div className="py-4 border-b border-gray-100">
+        <h4 className="text-sm font-bold text-gray-900 mb-3">Price Range</h4>
+        <div className="flex flex-col gap-2">
+          {PRICE_RANGES.map((range) => {
+            const isActive = activePriceRange?.label === range.label;
+            return (
+              <button
+                key={range.label}
+                onClick={() =>
+                  updateFilters(
+                    isActive
+                      ? { minPrice: null, maxPrice: null }
+                      : { minPrice: range.min, maxPrice: range.max },
+                  )
+                }
+                className={`text-left text-xs py-0.5 transition-all font-medium ${
+                  isActive
+                    ? "text-orange-600 font-bold"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                {isActive && "✓ "}
+                {range.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Custom price inputs */}
+        <div className="flex items-center gap-2 mt-3">
+          <input
+            type="number"
+            placeholder="Min ₫"
+            value={minPrice}
+            onChange={(e) => updateFilters({ minPrice: e.target.value })}
+            className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 transition"
+          />
+          <span className="text-gray-400 text-xs flex-shrink-0">–</span>
+          <input
+            type="number"
+            placeholder="Max ₫"
+            value={maxPrice}
+            onChange={(e) => updateFilters({ maxPrice: e.target.value })}
+            className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 transition"
+          />
+        </div>
+        {(minPrice || maxPrice) && (
+          <button
+            onClick={() => updateFilters({ minPrice: null, maxPrice: null })}
+            className="mt-2 text-xs text-blue-600 hover:underline"
+          >
+            Clear price range
+          </button>
+        )}
+      </div>
+
+      {/* Discount */}
+      <div className="py-4 border-b border-gray-100">
+        <h4 className="text-sm font-bold text-gray-900 mb-3">Discount</h4>
+        <div className="flex flex-col gap-2">
+          {DISCOUNTS.map((d) => (
             <button
               key={d}
-              onClick={() => updateFilters({ discount: d.toString() })}
-              className={`text-left text-sm transition-all py-0.5 ${discount === d.toString() ? 'text-blue-600 font-bold' : 'text-gray-600 font-medium hover:text-blue-500'}`}
+              onClick={() =>
+                updateFilters({ discount: discount === d.toString() ? null : d.toString() })
+              }
+              className={`text-left text-xs py-0.5 transition-all font-medium ${
+                discount === d.toString()
+                  ? "text-orange-600 font-bold"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
             >
-              {d}% off or more
+              {discount === d.toString() && "✓ "}
+              {d}% off and more
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Sort */}
+      <div className="py-4 border-b border-gray-100">
+        <h4 className="text-sm font-bold text-gray-900 mb-3">Sort</h4>
+        <div className="flex flex-col gap-2">
+          {SORT_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() =>
+                updateFilters({ sort: sort === opt.value ? null : opt.value })
+              }
+              className={`text-left text-xs py-0.5 transition-all font-medium ${
+                sort === opt.value
+                  ? "text-orange-600 font-bold"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              {sort === opt.value && "✓ "}
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Category */}
+      <div className="py-4">
+        <h4 className="text-sm font-bold text-gray-900 mb-3">Category</h4>
+        <div className="flex flex-col gap-2">
+          {catLoading ? (
+            <div className="space-y-2">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-3 bg-gray-100 rounded-full animate-pulse" />
+              ))}
+            </div>
+          ) : categories.length === 0 ? (
+            <p className="text-xs text-gray-400">No categories found</p>
+          ) : (
+            categories.map((cat) => {
+              const isActive = activeCategoryId === (cat._id || cat.name);
+              return (
+                <button
+                  key={cat._id || cat.name}
+                  onClick={() => handleCategoryClick(cat)}
+                  className={`text-left text-xs py-0.5 transition-all font-medium ${
+                    isActive
+                      ? "text-orange-600 font-bold"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  {isActive && "✓ "}
+                  {cat.name}
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
     </aside>

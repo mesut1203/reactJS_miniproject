@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Star, Shield, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Product } from "@/service/productService";
 
@@ -7,103 +7,98 @@ interface SearchResultCardProps {
 }
 
 const SearchResultCard = ({ product }: SearchResultCardProps) => {
-  const {
-    _id,
-    name,
-    image,
-    price,
-    priceDiscount,
-    avgRating,
-    reviewCount,
-    brand,
-    warranty,
-    shippingFee,
-  } = product;
+  const { _id, name, image, price, priceDiscount, avgRating, reviewCount, brand, warranty, shippingFee } = product;
 
-  const formatPrice = (p: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(p);
-  };
+  const formatPrice = (p: number) =>
+    new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(p);
 
-  const hasPrice = price != null && price > 0;
-  const finalPrice = hasPrice ? price - (priceDiscount || 0) : null;
-  const discountPct =
-    hasPrice && priceDiscount && priceDiscount > 0
-      ? Math.round((priceDiscount / price) * 100)
-      : 0;
+  const hasDiscount = priceDiscount != null && priceDiscount > 0 && price > priceDiscount;
+  const finalPrice = hasDiscount ? priceDiscount : price;
+  const discountPct = hasDiscount ? Math.round(((price - priceDiscount!) / price) * 100) : 0;
+  const rating = Math.round(avgRating || 0);
+  const isFreeShipping =
+    !shippingFee ||
+    shippingFee === "0" ||
+    shippingFee.toLowerCase().includes("miễn phí") ||
+    shippingFee.toLowerCase().includes("free");
 
   return (
     <Link
       to={`/product/${_id}`}
-      className="flex flex-col md:flex-row gap-6 p-4 bg-white border-b border-gray-100 hover:shadow-md transition-shadow group no-underline text-inherit"
+      className="flex gap-5 py-5 px-2 border-b border-gray-100 hover:bg-gray-50 transition-colors group no-underline text-inherit"
     >
-      {/* Product Image */}
-      <div className="w-full md:w-64 h-64 flex-shrink-0 flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden p-4">
+      {/* Image */}
+      <div className="w-44 h-44 flex-shrink-0 bg-white rounded-xl border border-gray-100 flex items-center justify-center p-3 overflow-hidden">
         <img
-          src={image || "https://placehold.co/400?text=No+Image"}
+          src={image || "https://placehold.co/300?text=No+Image"}
           alt={name}
-          className="max-w-full max-h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
+          className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300 mix-blend-multiply"
         />
       </div>
 
-      {/* Product Details */}
-      <div className="flex-1 flex flex-col gap-2">
-        <h3 className="text-lg font-medium text-blue-800 group-hover:text-orange-600 transition-colors line-clamp-2 md:max-w-2xl">
+      {/* Info */}
+      <div className="flex-1 flex flex-col gap-1.5 py-1">
+        <h3 className="text-sm font-medium text-gray-800 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
           {name}
         </h3>
 
-        {/* Rating */}
-        <div className="flex items-center gap-1">
-          <div className="flex text-yellow-500">
+        {/* Stars */}
+        <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-0.5">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
-                size={14}
-                className={i < Math.round(avgRating || 0) ? "fill-current" : "fill-gray-200 text-gray-200"}
+                size={12}
+                className={i < rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"}
               />
             ))}
           </div>
-          <span className="text-xs text-blue-600 hover:underline cursor-pointer ml-1">
-            {reviewCount?.toLocaleString() || 0}
-          </span>
+          {reviewCount != null && (
+            <span className="text-xs text-blue-600 hover:underline cursor-pointer">
+              {reviewCount.toLocaleString()}
+            </span>
+          )}
         </div>
 
-        {/* Price Section */}
-        {hasPrice && finalPrice != null && (
-          <div className="mt-1">
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-bold text-gray-900">
-                {formatPrice(finalPrice)}
-              </span>
-              {discountPct > 0 && (
-                <span className="text-sm text-gray-500">
-                  M.R.P: <span className="line-through">{formatPrice(price)}</span>
-                  <span className="ml-2">({discountPct}% off)</span>
+        {/* Price */}
+        {finalPrice != null && finalPrice > 0 && (
+          <div className="flex items-baseline gap-2 mt-0.5">
+            <span className="text-lg font-bold text-gray-900">{formatPrice(finalPrice)}</span>
+            {hasDiscount && (
+              <>
+                <span className="text-xs text-gray-400 line-through">{formatPrice(price)}</span>
+                <span className="text-xs font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                  -{discountPct}%
                 </span>
-              )}
-            </div>
+              </>
+            )}
           </div>
         )}
+        {hasDiscount && (
+          <p className="text-xs text-gray-400">
+            M.R.P: <span className="line-through">{formatPrice(price)}</span>
+          </p>
+        )}
 
-        {/* Other Info */}
-        <div className="mt-2 space-y-1 text-sm text-gray-600">
+        {/* Meta */}
+        <div className="flex flex-col gap-1 mt-1">
           {brand && (
-            <p>
-              Brand: <span className="font-medium text-gray-900">{brand}</span>
+            <p className="text-xs text-gray-500">
+              Brand: <span className="font-semibold text-gray-700">{brand}</span>
             </p>
           )}
           {warranty && (
-            <p>
-              {warranty} warranty
-            </p>
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+              <Shield size={11} className="text-gray-400" />
+              {warranty}
+            </div>
           )}
-          {shippingFee && (
-            <p className="text-gray-500">
-              {shippingFee.toLowerCase() === "miễn phí" ? "Free Delivery" : `Shipping: ${shippingFee}`}
-            </p>
-          )}
+          <div className="flex items-center gap-1 text-xs">
+            <Truck size={11} className={isFreeShipping ? "text-green-500" : "text-gray-400"} />
+            <span className={isFreeShipping ? "text-green-600 font-medium" : "text-gray-500"}>
+              {isFreeShipping ? "Free Delivery" : `Shipping: ${shippingFee}`}
+            </span>
+          </div>
         </div>
       </div>
     </Link>

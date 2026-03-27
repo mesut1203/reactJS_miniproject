@@ -1,6 +1,7 @@
 import { client } from "@/utils/clients";
 
 export interface Address {
+  _id?: string;
   id: string;
   name: string;
   country: string;

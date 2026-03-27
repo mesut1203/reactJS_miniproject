@@ -9,7 +9,7 @@ export interface UserProfile {
 }
 
 export const getProfile = async (): Promise<{ user: UserProfile }> => {
-  const { data } = await client.get("/profile");
+  const { data } = await client.get("/profile/me");
   return data;
 };
 
@@ -22,6 +22,6 @@ export interface UpdateProfilePayload {
 export const updateProfile = async (
   payload: UpdateProfilePayload,
 ): Promise<{ user: UserProfile }> => {
-  const { data } = await client.patch("/profile", payload);
+  const { data } = await client.patch("/profile/me", payload);
   return data;
 };

@@ -12,23 +12,27 @@ export default function MyDetails() {
     birthDate: "",
   });
 
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const data = await getProfile();
+      const u = data.user;
+      // API may return full ISO datetime, keep only YYYY-MM-DD
+      const birthDate = u.birthDate ? u.birthDate.slice(0, 10) : "";
+      setForm({
+        fullName: u.fullName || "",
+        email: u.email || "",
+        phone: u.phone || "",
+        birthDate,
+      });
+    } catch {
+      toast.error("Không thể tải thông tin hồ sơ. Vui lòng đăng nhập lại.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const data = await getProfile();
-        const u = data.user;
-        setForm({
-          fullName: u.fullName || "",
-          email: u.email || "",
-          phone: u.phone || "",
-          birthDate: u.birthDate || "",
-        });
-      } catch {
-        toast.error("Failed to load profile");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchProfile();
   }, []);
 
@@ -41,14 +45,29 @@ export default function MyDetails() {
     e.preventDefault();
     try {
       setSaving(true);
-      await updateProfile({
+      const updated = await updateProfile({
         fullName: form.fullName,
         phone: form.phone,
         birthDate: form.birthDate || undefined,
       });
-      toast.success("Details updated successfully!");
+      // Sync form with server response
+      const u = updated.user;
+      const birthDate = u.birthDate ? u.birthDate.slice(0, 10) : "";
+      setForm({
+        fullName: u.fullName || "",
+        email: u.email || "",
+        phone: u.phone || "",
+        birthDate,
+      });
+      toast.success("Cập nhật thông tin thành công!");
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to update details");
+      const errors = err?.response?.data?.errors;
+      if (errors) {
+        const first = Object.values(errors)[0] as string;
+        toast.error(first);
+      } else {
+        toast.error(err?.response?.data?.message || "Cập nhật thất bại. Vui lòng thử lại.");
+      }
     } finally {
       setSaving(false);
     }

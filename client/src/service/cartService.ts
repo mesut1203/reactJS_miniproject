@@ -45,7 +45,7 @@ export const updateCartQuantity = async (
   productId: string,
   quantity: number,
 ) => {
-  const { data } = await client.put(`/shopping-cart/${productId}`, {
+  const { data } = await client.patch(`/shopping-cart/${productId}`, {
     quantity,
   });
   return data;

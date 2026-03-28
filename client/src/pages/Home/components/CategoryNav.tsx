@@ -1,12 +1,14 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "@/stores/store";
 import { Menu } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function CategoryNav() {
   const { categories } = useSelector((state: RootState) => state.product);
+  const navigate = useNavigate();
 
   return (
-    <div className="w-full bg-#FFFFFF border-b border-gray-100 py-4 shadow-sm sticky top-[64px] z-40">
+    <div className="w-full bg-#FFFFFF border-b border-gray-100 py-4 shadow-sm z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-center gap-4">
         
         {/* Horizontal scroll container for categories */}
@@ -14,6 +16,7 @@ export default function CategoryNav() {
           {categories.length > 0 ? categories.map((cat, idx) => (
             <button 
               key={idx}
+              onClick={() => navigate(`/search?category=${encodeURIComponent(cat)}&categoryName=${encodeURIComponent(cat)}`)}
               className="whitespace-nowrap rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium px-5 py-2 transition-colors"
             >
               {cat}

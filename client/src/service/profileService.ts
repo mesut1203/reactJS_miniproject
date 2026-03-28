@@ -27,7 +27,7 @@ export const updateProfile = async (
 };
 
 export interface ChangePasswordPayload {
-  password?: string;
+  currentPassword?: string;
   newPassword?: string;
   confirmPassword?: string;
 }

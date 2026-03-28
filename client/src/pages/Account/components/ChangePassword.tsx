@@ -38,7 +38,7 @@ export default function ChangePassword() {
     try {
       setSaving(true);
       const payload = {
-        password: form.currentPassword,
+        currentPassword: form.currentPassword,
         newPassword: form.newPassword,
         confirmPassword: form.confirmPassword,
       };
@@ -47,9 +47,7 @@ export default function ChangePassword() {
       setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err: any) {
       const errors = err?.response?.data?.errors;
-      if (errors?.password) {
-        toast.error(errors.password);
-      } else if (errors?.currentPassword) {
+      if (errors?.currentPassword) {
         toast.error(errors.currentPassword);
       } else {
         toast.error(
